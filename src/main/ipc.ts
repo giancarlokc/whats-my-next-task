@@ -30,6 +30,51 @@ export function registerTaskIpcHandlers(store: TaskStore) {
   });
 }
 
+export function registerWindowIpcHandlers() {
+  ipcMain.handle('window:minimize', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    window?.minimize();
+  });
+
+  ipcMain.handle('window:toggle-maximize', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window) {
+      return false;
+    }
+    if (window.isMaximized()) {
+      window.unmaximize();
+      return false;
+    }
+    window.maximize();
+    return true;
+  });
+
+  ipcMain.handle('window:toggle-fullscreen', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window) {
+      return false;
+    }
+    const nextState = !window.isFullScreen();
+    window.setFullScreen(nextState);
+    return nextState;
+  });
+
+  ipcMain.handle('window:close', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    window?.close();
+  });
+
+  ipcMain.handle('window:is-maximized', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    return window?.isMaximized() ?? false;
+  });
+
+  ipcMain.handle('window:is-fullscreen', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    return window?.isFullScreen() ?? false;
+  });
+}
+
 function broadcastTasksChanged(tasks: ReturnType<TaskStore['list']>) {
   for (const window of BrowserWindow.getAllWindows()) {
     window.webContents.send('tasks:changed', tasks);

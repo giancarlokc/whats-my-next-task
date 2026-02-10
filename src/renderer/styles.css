@@ -15,10 +15,17 @@ body {
   background: #f6f4ee;
 }
 
+.app-frame {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 .app-shell {
   display: grid;
   grid-template-columns: 320px 1fr;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
 }
 
 .main-view {
