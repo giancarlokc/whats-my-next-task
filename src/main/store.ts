@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import type { Task, TaskInput } from '../shared/types';
+import type { EffortLevel, ImpactLevel, Task, TaskInput } from '../shared/types';
 
 export class TaskStore {
   private tasks = new Map<string, Task>();
@@ -11,6 +11,8 @@ export class TaskStore {
   add(input: TaskInput): Task[] {
     const name = input.name.trim();
     const description = input.description.trim();
+    const effort = normalizeLevel(input.effort, 'LOW');
+    const impact = normalizeLevel(input.impact, 'HIGH');
     if (!name) {
       throw new Error('Task name is required.');
     }
@@ -19,6 +21,8 @@ export class TaskStore {
       id: randomUUID(),
       name,
       description,
+      effort,
+      impact,
     };
 
     this.tasks.set(task.id, task);
@@ -29,4 +33,14 @@ export class TaskStore {
     this.tasks.delete(id);
     return this.list();
   }
+}
+
+function normalizeLevel(
+  value: EffortLevel | ImpactLevel | undefined,
+  fallback: EffortLevel | ImpactLevel,
+): EffortLevel | ImpactLevel {
+  if (value === 'LOW' || value === 'HIGH') {
+    return value;
+  }
+  return fallback;
 }
