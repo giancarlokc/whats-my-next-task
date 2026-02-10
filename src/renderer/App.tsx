@@ -3,11 +3,13 @@ import type { Task, TaskInput } from '../shared/types';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { TaskView } from './components/TaskView/TaskView';
 import { AddTaskDialog } from './components/AddTaskDialog/AddTaskDialog';
+import { Titlebar } from './components/Titlebar/Titlebar';
 
 export function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const platform = window.appInfo?.platform ?? ('win32' as NodeJS.Platform);
 
   useEffect(() => {
     let isMounted = true;
@@ -80,21 +82,24 @@ export function App() {
   };
 
   return (
-    <div className="app-shell">
-      <Sidebar
-        tasks={tasks}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onAdd={() => setIsDialogOpen(true)}
-      />
-      <main className="main-view">
-        <TaskView task={selectedTask} onDelete={handleDeleteTask} />
-      </main>
-      <AddTaskDialog
-        isOpen={isDialogOpen}
-        onAdd={handleAddTask}
-        onCancel={() => setIsDialogOpen(false)}
-      />
+    <div className="app-frame">
+      <Titlebar platform={platform} appName="Tasks" />
+      <div className="app-shell">
+        <Sidebar
+          tasks={tasks}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          onAdd={() => setIsDialogOpen(true)}
+        />
+        <main className="main-view">
+          <TaskView task={selectedTask} onDelete={handleDeleteTask} />
+        </main>
+        <AddTaskDialog
+          isOpen={isDialogOpen}
+          onAdd={handleAddTask}
+          onCancel={() => setIsDialogOpen(false)}
+        />
+      </div>
     </div>
   );
 }
