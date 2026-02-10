@@ -2,7 +2,7 @@
   "name": "electron-react-tasks",
   "version": "0.1.0",
   "description": "Simple Electron + React + TypeScript tasks app",
-  "main": "dist/main/main.js",
+  "main": "dist/main/main/main.js",
   "author": "",
   "license": "MIT",
   "scripts": {

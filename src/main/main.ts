@@ -12,11 +12,11 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '../preload/preload.js'),
+      preload: path.join(__dirname, '../../preload/preload/preload.js'),
     },
   });
 
-  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  mainWindow.loadFile(path.join(__dirname, '../../renderer/index.html'));
 }
 
 app.whenReady().then(() => {
