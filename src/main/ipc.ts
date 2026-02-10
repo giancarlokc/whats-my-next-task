@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain } from 'electron';
-import type { TaskActionResult, TaskInput } from '../shared/types';
+import type { EffortLevel, ImpactLevel, TaskActionResult, TaskInput } from '../shared/types';
 import { TaskStore } from './store';
 
 export function registerTaskIpcHandlers(store: TaskStore) {
@@ -46,7 +46,18 @@ function parseTaskInput(
   if (typeof record.name !== 'string' || typeof record.description !== 'string') {
     return { ok: false, error: 'Task payload is invalid.' };
   }
-  return { ok: true, value: { name: record.name, description: record.description } };
+  const effort = parseLevel(record.effort, 'LOW');
+  if (!effort) {
+    return { ok: false, error: 'Task effort is invalid.' };
+  }
+  const impact = parseLevel(record.impact, 'HIGH');
+  if (!impact) {
+    return { ok: false, error: 'Task impact is invalid.' };
+  }
+  return {
+    ok: true,
+    value: { name: record.name, description: record.description, effort, impact },
+  };
 }
 
 function parseTaskDeletePayload(
@@ -67,4 +78,17 @@ function toErrorMessage(error: unknown): string {
     return error.message;
   }
   return 'Unexpected error.';
+}
+
+function parseLevel(
+  value: unknown,
+  fallback: EffortLevel | ImpactLevel,
+): EffortLevel | ImpactLevel | null {
+  if (value === undefined || value === null) {
+    return fallback;
+  }
+  if (value === 'LOW' || value === 'HIGH') {
+    return value;
+  }
+  return null;
 }

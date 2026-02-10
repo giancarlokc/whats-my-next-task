@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { TaskInput } from '../../../shared/types';
+import type { EffortLevel, ImpactLevel, TaskInput } from '../../../shared/types';
 import './AddTaskDialog.css';
 
 interface AddTaskDialogProps {
@@ -11,6 +11,8 @@ interface AddTaskDialogProps {
 export function AddTaskDialog({ isOpen, onAdd, onCancel }: AddTaskDialogProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [effort, setEffort] = useState<EffortLevel>('LOW');
+  const [impact, setImpact] = useState<ImpactLevel>('HIGH');
   const [error, setError] = useState<string | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -19,6 +21,8 @@ export function AddTaskDialog({ isOpen, onAdd, onCancel }: AddTaskDialogProps) {
     if (isOpen) {
       setName('');
       setDescription('');
+      setEffort('LOW');
+      setImpact('HIGH');
       setError(null);
       requestAnimationFrame(() => nameInputRef.current?.focus());
     }
@@ -51,7 +55,7 @@ export function AddTaskDialog({ isOpen, onAdd, onCancel }: AddTaskDialogProps) {
       return;
     }
     try {
-      const result = await onAdd({ name: trimmedName, description });
+      const result = await onAdd({ name: trimmedName, description, effort, impact });
       if (!result.ok) {
         setError(result.error ?? 'Unable to create task.');
       }
@@ -127,6 +131,64 @@ export function AddTaskDialog({ isOpen, onAdd, onCancel }: AddTaskDialogProps) {
               rows={4}
             />
           </label>
+          <fieldset className="dialog-fieldset">
+            <legend>Impact</legend>
+            <div className="radio-grid">
+              <label className={impact === 'HIGH' ? 'radio-card radio-card--active' : 'radio-card'}>
+                <input
+                  className="radio-input"
+                  type="radio"
+                  name="impact"
+                  value="HIGH"
+                  checked={impact === 'HIGH'}
+                  onChange={() => setImpact('HIGH')}
+                />
+                <span className="radio-title">High</span>
+                <span className="radio-subtitle">Big outcomes</span>
+              </label>
+              <label className={impact === 'LOW' ? 'radio-card radio-card--active' : 'radio-card'}>
+                <input
+                  className="radio-input"
+                  type="radio"
+                  name="impact"
+                  value="LOW"
+                  checked={impact === 'LOW'}
+                  onChange={() => setImpact('LOW')}
+                />
+                <span className="radio-title">Low</span>
+                <span className="radio-subtitle">Smaller gains</span>
+              </label>
+            </div>
+          </fieldset>
+          <fieldset className="dialog-fieldset">
+            <legend>Effort</legend>
+            <div className="radio-grid">
+              <label className={effort === 'LOW' ? 'radio-card radio-card--active' : 'radio-card'}>
+                <input
+                  className="radio-input"
+                  type="radio"
+                  name="effort"
+                  value="LOW"
+                  checked={effort === 'LOW'}
+                  onChange={() => setEffort('LOW')}
+                />
+                <span className="radio-title">Low</span>
+                <span className="radio-subtitle">Light lift</span>
+              </label>
+              <label className={effort === 'HIGH' ? 'radio-card radio-card--active' : 'radio-card'}>
+                <input
+                  className="radio-input"
+                  type="radio"
+                  name="effort"
+                  value="HIGH"
+                  checked={effort === 'HIGH'}
+                  onChange={() => setEffort('HIGH')}
+                />
+                <span className="radio-title">High</span>
+                <span className="radio-subtitle">Heavy lift</span>
+              </label>
+            </div>
+          </fieldset>
           {error ? <p className="dialog-error">{error}</p> : null}
           <div className="dialog-actions">
             <button type="button" onClick={onCancel}>

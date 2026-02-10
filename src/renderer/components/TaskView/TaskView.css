@@ -30,6 +30,93 @@
   font-size: 12px;
 }
 
+.matrix-summary {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+.matrix-summary span {
+  font-weight: 600;
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: minmax(80px, 110px) repeat(2, minmax(0, 1fr));
+  grid-template-rows: 32px repeat(2, minmax(120px, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.matrix-corner {
+  background: transparent;
+}
+
+.matrix-axis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+.matrix-axis--y {
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.matrix-cell {
+  border-radius: 18px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  min-height: 120px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.matrix-cell span {
+  font-weight: 600;
+}
+
+.matrix-cell small {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.matrix-cell--active {
+  border-color: #f59e0b;
+  background: #fff7ed;
+  box-shadow: 0 14px 28px rgba(245, 158, 11, 0.25);
+}
+
+.matrix-cell--active span {
+  color: #b45309;
+}
+
 .empty-state {
   color: #6b7280;
+}
+
+@media (max-width: 700px) {
+  .matrix-grid {
+    grid-template-columns: minmax(70px, 90px) repeat(2, minmax(0, 1fr));
+    grid-template-rows: 28px repeat(2, minmax(96px, 1fr));
+    gap: 8px;
+  }
+
+  .matrix-axis--y {
+    justify-content: flex-start;
+    padding-right: 0;
+  }
+
+  .matrix-cell {
+    padding: 12px;
+    min-height: 96px;
+  }
 }
