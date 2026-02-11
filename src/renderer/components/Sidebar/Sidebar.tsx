@@ -25,7 +25,9 @@ export function Sidebar({ tasks, selectedId, onSelect, onAdd }: SidebarProps) {
       <div className="task-list">
         {sections.map((section, index) => (
           <div key={section.key} className="task-section">
-            <div className="task-section__header">{section.title}</div>
+            {section.tasks.length > 0 ? (
+              <div className="task-section__header">{section.title}</div>
+            ) : null}
             {section.tasks.length === 0 ? (
               !hasTasks && index === 0 ? (
                 <p className="task-section__empty">No tasks yet.</p>
