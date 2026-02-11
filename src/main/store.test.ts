@@ -1,9 +1,24 @@
 import { describe, expect, it } from 'vitest';
+import type { Task } from '../shared/types';
+import type { TaskPersistence } from './taskPersistence';
 import { TaskStore } from './store';
 
+class MemoryPersistence implements TaskPersistence {
+  private tasks: Task[] = [];
+
+  async load(): Promise<Task[]> {
+    return this.tasks;
+  }
+
+  async save(tasks: Task[]): Promise<void> {
+    this.tasks = tasks;
+  }
+}
+
 describe('TaskStore', () => {
-  it('adds and deletes tasks', () => {
-    const store = new TaskStore();
+  it('adds and deletes tasks', async () => {
+    const store = new TaskStore(new MemoryPersistence());
+    await store.ready;
     const first = store.add({
       name: 'First',
       description: 'One',

@@ -3,9 +3,11 @@ import type { EffortLevel, ImpactLevel, TaskActionResult, TaskInput } from '../s
 import { TaskStore } from './store';
 
 export function registerTaskIpcHandlers(store: TaskStore) {
-  ipcMain.handle('tasks:list', () => store.list());
+  ipcMain.handle('tasks:list', async () => {
+    return store.list();
+  });
 
-  ipcMain.handle('tasks:add', (_event, input: unknown): TaskActionResult => {
+  ipcMain.handle('tasks:add', async (_event, input: unknown): Promise<TaskActionResult> => {
     const parsedInput = parseTaskInput(input);
     if (!parsedInput.ok) {
       return { ok: false, error: parsedInput.error, tasks: store.list() };
@@ -19,7 +21,7 @@ export function registerTaskIpcHandlers(store: TaskStore) {
     }
   });
 
-  ipcMain.handle('tasks:delete', (_event, payload: unknown): TaskActionResult => {
+  ipcMain.handle('tasks:delete', async (_event, payload: unknown): Promise<TaskActionResult> => {
     const parsedPayload = parseTaskDeletePayload(payload);
     if (!parsedPayload.ok) {
       return { ok: false, error: parsedPayload.error, tasks: store.list() };
