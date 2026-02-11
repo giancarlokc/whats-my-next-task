@@ -86,7 +86,7 @@ export function App() {
 
   return (
     <div className="app-frame">
-      <Titlebar platform={platform} appName="Tasks" />
+      <Titlebar platform={platform} appName="Test" />
       <div className="app-shell">
         <Sidebar
           tasks={tasks}

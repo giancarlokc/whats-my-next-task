@@ -9,6 +9,7 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
+    title: 'Test',
     frame: false,
     // Frameless window with custom controls rendered in the renderer.
     backgroundColor: '#f6f4ee',
