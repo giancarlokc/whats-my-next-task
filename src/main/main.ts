@@ -3,7 +3,8 @@ import path from 'path';
 import { registerTaskIpcHandlers, registerWindowIpcHandlers } from './ipc';
 import { TaskStore } from './store';
 
-const store = new TaskStore();
+let taskStore: TaskStore | undefined;
+let isQuitting = false;
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -40,7 +41,10 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  registerTaskIpcHandlers(store);
+  taskStore = new TaskStore({
+    storagePath: path.join(app.getPath('userData'), 'tasks.json'),
+  });
+  registerTaskIpcHandlers(taskStore);
   registerWindowIpcHandlers();
   createWindow();
 
@@ -55,4 +59,20 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', (event) => {
+  if (isQuitting || !taskStore) {
+    return;
+  }
+  event.preventDefault();
+  isQuitting = true;
+  taskStore
+    .flush()
+    .catch((error) => {
+      console.warn('Failed to flush tasks before quit.', error);
+    })
+    .finally(() => {
+      app.quit();
+    });
 });
