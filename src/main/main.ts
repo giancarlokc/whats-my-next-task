@@ -1,9 +1,11 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { registerTaskIpcHandlers, registerWindowIpcHandlers } from './ipc';
+import { JsonTaskPersistence } from './taskPersistence';
 import { TaskStore } from './store';
 
-const store = new TaskStore();
+let taskStore: TaskStore | null = null;
+let isQuitting = false;
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -39,8 +41,11 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, '../../renderer/index.html'));
 }
 
-app.whenReady().then(() => {
-  registerTaskIpcHandlers(store);
+app.whenReady().then(async () => {
+  const tasksPath = path.join(app.getPath('userData'), 'tasks.json');
+  taskStore = new TaskStore(new JsonTaskPersistence(tasksPath));
+  await taskStore.ready;
+  registerTaskIpcHandlers(taskStore);
   registerWindowIpcHandlers();
   createWindow();
 
@@ -49,6 +54,20 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+});
+
+app.on('before-quit', async (event) => {
+  if (isQuitting || !taskStore) {
+    return;
+  }
+  isQuitting = true;
+  event.preventDefault();
+  try {
+    await taskStore.waitForPersistence();
+  } catch (error) {
+    console.error('Failed to flush tasks before quit.', error);
+  }
+  app.quit();
 });
 
 app.on('window-all-closed', () => {
