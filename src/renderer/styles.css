@@ -4,6 +4,9 @@
   font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
   color: #0f1a2b;
   background: #f6f4ee;
+  --layer-base: 0;
+  --layer-sticky: 10;
+  --layer-overlay: 100;
 }
 
 * {

@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  z-index: var(--layer-overlay);
 }
 
 .dialog {
@@ -14,6 +15,8 @@
   padding: 24px;
   width: min(480px, 100%);
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3);
+  position: relative;
+  z-index: calc(var(--layer-overlay) + 1);
 }
 
 .dialog header h2 {
