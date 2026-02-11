@@ -1,4 +1,9 @@
 import React from 'react';
+import {
+  getPrioritySections,
+  normalizeEffortImpact,
+  type PriorityBucket,
+} from '../../../shared/priority';
 import type { EffortLevel, ImpactLevel, Task } from '../../../shared/types';
 import './TaskView.css';
 
@@ -18,8 +23,9 @@ export function TaskView({ task, onDelete }: TaskViewProps) {
   }
 
   const matrix = getEffortImpactMatrix();
-  const effort = normalizeLevel(task.effort, 'LOW');
-  const impact = normalizeLevel(task.impact, 'HIGH');
+  const { effort, impact, isFallback } = normalizeEffortImpact(
+    task as { effort?: unknown; impact?: unknown },
+  );
   const activeCell = matrix[effort][impact];
 
   return (
@@ -38,6 +44,9 @@ export function TaskView({ task, onDelete }: TaskViewProps) {
         <h3>Effort/Impact Matrix</h3>
         <div className="matrix-summary">
           Resulting priority: <span>{activeCell.title}</span>
+          {isFallback ? (
+            <span className="matrix-summary__hint"> (set effort and impact)</span>
+          ) : null}
         </div>
         <div className="matrix-grid" role="grid" aria-label="Effort and impact matrix">
           <div className="matrix-corner" aria-hidden="true" />
@@ -68,23 +77,23 @@ export function TaskView({ task, onDelete }: TaskViewProps) {
 }
 
 function getEffortImpactMatrix() {
+  const titles = getPrioritySections().reduce(
+    (acc, section) => {
+      acc[section.key] = section.title;
+      return acc;
+    },
+    {} as Record<PriorityBucket, string>,
+  );
   return {
     HIGH: {
-      LOW: { title: 'Deprioritize', subtitle: 'Time Sink' },
-      HIGH: { title: 'Major Project', subtitle: 'Medium-High Priority' },
+      LOW: { title: titles.DEPRIORITIZE, subtitle: 'Time Sink' },
+      HIGH: { title: titles.MAJOR_PROJECT, subtitle: 'Medium-High Priority' },
     },
     LOW: {
-      LOW: { title: 'Fill-in', subtitle: 'Low Priority' },
-      HIGH: { title: 'Quick Win', subtitle: 'High Priority' },
+      LOW: { title: titles.FILL_IN, subtitle: 'Low Priority' },
+      HIGH: { title: titles.QUICK_WIN, subtitle: 'High Priority' },
     },
   } satisfies Record<EffortLevel, Record<ImpactLevel, { title: string; subtitle: string }>>;
-}
-
-function normalizeLevel(
-  value: EffortLevel | ImpactLevel | undefined,
-  fallback: EffortLevel | ImpactLevel,
-) {
-  return value === 'HIGH' || value === 'LOW' ? value : fallback;
 }
 
 function getCellClass(

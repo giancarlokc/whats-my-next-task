@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { Task, TaskInput } from '../shared/types';
+import { orderTasksByPriority } from '../shared/priority';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { TaskView } from './components/TaskView/TaskView';
 import { AddTaskDialog } from './components/AddTaskDialog/AddTaskDialog';
@@ -10,6 +11,8 @@ export function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const platform = window.appInfo?.platform ?? ('win32' as NodeJS.Platform);
+  const getFirstPriorityTaskId = (taskList: Task[]) =>
+    orderTasksByPriority(taskList)[0]?.id ?? null;
 
   useEffect(() => {
     let isMounted = true;
@@ -20,10 +23,10 @@ export function App() {
       setTasks(updatedTasks);
       setSelectedId((current) => {
         if (!current) {
-          return updatedTasks[0]?.id ?? null;
+          return getFirstPriorityTaskId(updatedTasks);
         }
         const stillExists = updatedTasks.some((task) => task.id === current);
-        return stillExists ? current : (updatedTasks[0]?.id ?? null);
+        return stillExists ? current : getFirstPriorityTaskId(updatedTasks);
       });
     });
 
@@ -34,7 +37,7 @@ export function App() {
           return;
         }
         setTasks(initialTasks);
-        setSelectedId(initialTasks[0]?.id ?? null);
+        setSelectedId(getFirstPriorityTaskId(initialTasks));
       } catch (error) {
         if (!isMounted) {
           return;
@@ -60,7 +63,7 @@ export function App() {
     const result = await window.tasksApi.add(input);
     if (result.ok) {
       setTasks(result.tasks);
-      setSelectedId((current) => current ?? result.tasks[0]?.id ?? null);
+      setSelectedId((current) => current ?? getFirstPriorityTaskId(result.tasks));
       setIsDialogOpen(false);
       return { ok: true };
     }
@@ -73,10 +76,10 @@ export function App() {
       setTasks(result.tasks);
       setSelectedId((current) => {
         if (!current) {
-          return result.tasks[0]?.id ?? null;
+          return getFirstPriorityTaskId(result.tasks);
         }
         const stillExists = result.tasks.some((task) => task.id === current);
-        return stillExists ? current : (result.tasks[0]?.id ?? null);
+        return stillExists ? current : getFirstPriorityTaskId(result.tasks);
       });
     }
   };
