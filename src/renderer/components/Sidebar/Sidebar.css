@@ -29,6 +29,25 @@
   min-height: 0;
 }
 
+.task-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-section__header {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #d1d5db;
+}
+
+.task-section__empty {
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 0;
+}
+
 .task-item {
   width: 100%;
   text-align: left;
@@ -74,10 +93,6 @@
   font-size: 12px;
   opacity: 0.75;
   word-break: break-word;
-}
-
-.empty {
-  opacity: 0.7;
 }
 
 @media (max-width: 900px) {
