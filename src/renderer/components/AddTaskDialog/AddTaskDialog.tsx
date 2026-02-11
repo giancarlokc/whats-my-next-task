@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { EffortLevel, ImpactLevel, TaskInput } from '../../../shared/types';
 import './AddTaskDialog.css';
 
@@ -47,6 +48,11 @@ export function AddTaskDialog({ isOpen, onAdd, onCancel }: AddTaskDialogProps) {
     return null;
   }
 
+  const portalRoot = document.getElementById('modal-root') ?? document.body;
+  if (!portalRoot) {
+    return null;
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const trimmedName = name.trim();
@@ -64,7 +70,7 @@ export function AddTaskDialog({ isOpen, onAdd, onCancel }: AddTaskDialogProps) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="dialog-backdrop" role="presentation" onClick={onCancel}>
       <div
         className="dialog"
@@ -200,6 +206,7 @@ export function AddTaskDialog({ isOpen, onAdd, onCancel }: AddTaskDialogProps) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    portalRoot,
   );
 }

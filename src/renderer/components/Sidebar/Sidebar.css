@@ -59,7 +59,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
-  z-index: 1;
+  z-index: var(--layer-base);
 }
 
 .task-list-shell::before {
@@ -93,7 +93,7 @@
   color: #d1d5db;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: var(--layer-sticky);
   background: var(--sidebar-bg);
   padding: 6px 0;
   min-height: 24px;
