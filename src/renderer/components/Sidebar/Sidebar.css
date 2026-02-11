@@ -1,5 +1,7 @@
 .sidebar {
-  background: #111827;
+  --sidebar-bg: #111827;
+  --sidebar-shadow: rgba(0, 0, 0, 0.35);
+  background: var(--sidebar-bg);
   color: #f9fafb;
   padding: 24px;
   display: flex;
@@ -27,6 +29,55 @@
   overflow: auto;
   flex: 1;
   min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+  background-color: transparent;
+}
+
+.task-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.task-list-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: var(--sidebar-bg);
+}
+
+.task-list-shell::before,
+.task-list-shell::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+.task-list-shell::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--sidebar-shadow), var(--sidebar-bg));
+}
+
+.task-list-shell::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--sidebar-shadow), var(--sidebar-bg));
+}
+
+.task-list-shell--scroll-top::before {
+  opacity: 1;
+}
+
+.task-list-shell--scroll-bottom::after {
+  opacity: 1;
 }
 
 .task-section {
@@ -40,6 +91,18 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: #d1d5db;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--sidebar-bg);
+  padding: 6px 0;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.task-section__header.is-stuck {
+  box-shadow: 0 -8px 10px -10px var(--sidebar-shadow);
 }
 
 .task-section__empty {
